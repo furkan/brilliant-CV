@@ -1,50 +1,31 @@
-name: Compile Test
-permissions:
-  contents: read
+name: Compile and Commit CV PDF
 
 on:
-    push:
-    pull_request:
-    workflow_dispatch:
-
-env:
-  CHECKOUT_PATH: ./project
+  push:
+    branches:
+      - main
 
 jobs:
-    compile:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                path: ${{ env.CHECKOUT_PATH }}
+  build:
+    name: compile-commit-cv-pdf
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
-            - uses: SebRollen/toml-action@v1.2.0
-              id: get-package-name
-              with:
-                file: ./${{ env.CHECKOUT_PATH }}/typst.toml
-                field: package.name
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
-            - uses: SebRollen/toml-action@v1.2.0
-              id: get-package-version
-              with:
-                file: ./${{ env.CHECKOUT_PATH }}/typst.toml
-                field: package.version
+      - name: Setup Typst
+        uses: typst-community/setup-typst@v3
 
-            - uses: SebRollen/toml-action@v1.2.0
-              id: get-template-path
-              with:
-                file: ./${{ env.CHECKOUT_PATH }}/typst.toml
-                field: template.path
+      - run: mkdir -p ./output
+      - run: typst compile ./cv.typ ./output/CV.pdf --font-path ./src/fonts
 
-            - uses: SebRollen/toml-action@v1.2.0
-              id: get-template-entrypoint
-              with:
-                file: ./${{ env.CHECKOUT_PATH }}/typst.toml
-                field: template.entrypoint
-
-            - uses: typst-community/setup-typst@v3
-            - run: |
-                mkdir -p $HOME/.local/share/typst/packages/preview/${{ steps.get-package-name.outputs.value }}/${{ steps.get-package-version.outputs.value }}
-                cp -r -a ${{ env.CHECKOUT_PATH }}/. $HOME/.local/share/typst/packages/preview/${{ steps.get-package-name.outputs.value }}/${{ steps.get-package-version.outputs.value }}
-            - run: typst c ${{ env.CHECKOUT_PATH }}/${{ steps.get-template-path.outputs.value }}/${{ steps.get-template-entrypoint.outputs.value }}
-
+      - name: Commit CV PDF
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Compile and Commit PDF
+          file_pattern: 'output/CV.pdf'
