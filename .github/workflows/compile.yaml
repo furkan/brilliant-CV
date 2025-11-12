@@ -1,4 +1,4 @@
-name: Compile and Commit CV PDF
+name: Compile and Release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: compile-commit-cv-pdf
+    name: compile-release-cv-pdf
     runs-on: ubuntu-latest
     permissions:
       contents: write
