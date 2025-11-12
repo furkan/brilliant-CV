@@ -23,20 +23,10 @@ jobs:
       - name: Compile CV
         run: typst compile ./cv.typ ./output/CV.pdf --font-path ./src/fonts
 
-      - name: Generate release tag
-        id: tag
-        run: |
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          echo "tag=cv-${SHORT_SHA}" >> $GITHUB_OUTPUT
-
-      - name: Create / Update Release with PDF
+      - name: Update Latest Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: CV – ${{ steps.tag.outputs.tag }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+          tag_name: latest
           files: |
             output/CV.pdf
-          fail_on_unmatched_files: false
+          make_latest: true
