@@ -15,17 +15,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
       - name: Setup Typst
         uses: typst-community/setup-typst@v3
 
-      - run: mkdir -p ./output
-      - run: typst compile ./cv.typ ./output/CV.pdf --font-path ./src/fonts
+      - name: Create output directory
+        run: mkdir -p ./output
+      - name: Compile CV
+        run: typst compile ./cv.typ ./output/CV.pdf --font-path ./src/fonts
 
-      - name: Commit CV PDF
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Generate release tag
+        id: tag
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "tag=cv-${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Create / Update Release with PDF
+        uses: softprops/action-gh-release@v2
         with:
-          commit_message: Compile and Commit PDF
-          file_pattern: 'output/CV.pdf'
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: CV – ${{ steps.tag.outputs.tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            output/CV.pdf
+          fail_on_unmatched_files: false
