@@ -17,6 +17,7 @@ location: [],
 description: list(
 [Intentionally moved beyond a specialized ML role to gain deep, hands-on expertise in modern full-stack frameworks, real-time backend systems, and consumer-facing product launches.],
 [Key Projects: (Viewable at #link("https://furkan.github.io/projects"))  #[
+- *Dockerlings*: Open sourced a TUI that teaches Docker & Compose commands with exercises.
 - *Dekart:* Launched a mobile app for discovering credit-card campaigns using Expo and Django. Engineered a data pipeline with a web scraper and LLM-based data enrichment, hosted on Supabase.
 - *Chezzl:* Built a 5-player synchronous chess puzzle game, architecting a real-time backend with ElysiaJS and WebSockets and a responsive React frontend.
 - *SyncOrbit:* Created a casual puzzle mobile game in Unity, currently in private beta testing.]],
